@@ -3282,7 +3282,7 @@ class WorkflowJobTemplateNotificationTemplatesSuccessList(WorkflowJobTemplateNot
 
 class WorkflowJobTemplateNotificationTemplatesApprovalList(WorkflowJobTemplateNotificationTemplatesAnyList):
 
-    relationship = 'approval_notifications'
+    relationship = 'notification_templates_approvals'
 
 
 class WorkflowJobTemplateAccessList(ResourceAccessList):
@@ -4464,7 +4464,7 @@ class WorkflowApprovalTemplateNotificationTemplatesList(SubListCreateAttachDetac
 
 class WorkflowApprovalNotificationTemplatesList(WorkflowApprovalTemplateNotificationTemplatesList):
 
-    relationship = 'approval_notifications'
+    relationship = 'notification_templates_approvals'
 
 
 class WorkflowApprovalList(ListCreateAPIView):
