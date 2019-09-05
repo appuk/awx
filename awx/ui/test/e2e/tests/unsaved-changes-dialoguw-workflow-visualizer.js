@@ -89,7 +89,7 @@ module.exports = {
                 done();
             });
     },
-    'verify that workflow visualizer new root node can only be set to always': client => {
+    'verify that any changes made to a WFJT creates a dialogue for warning unsaved changes': client => {
         client
             .useXpath()
             .findThenClick(xPathNodeById(startNodeId))
@@ -102,7 +102,7 @@ module.exports = {
             // Make sure that the animation finishes before moving on to the next test
             .pause(500);
     },
-    'verify that a link can be changed': client => {
+    'verify that the user can hit the EXIT button to navigate out of the WFJT without saving changes': client => {
         client
             .useXpath()
             .moveToElement(xPathLinkById(initialJobNodeId, initialInventoryNodeId), 20, 0, () => {
@@ -117,81 +117,3 @@ module.exports = {
             .findThenClick(linkSuccessDropdown)
             .click(linkSelectButton);
     },
-    'verify that a new sibling node can be any edge type': client => {
-        client
-            .useXpath()
-            .moveToElement(xPathNodeById(initialJobNodeId), 0, 0, () => {
-                client.pause(500);
-                client.waitForElementNotVisible(spinny);
-                // Concatenating the xpaths lets us click the proper node
-                client.click(xPathNodeById(initialJobNodeId) + nodeAdd);
-            })
-            .pause(1000)
-            .waitForElementNotVisible(spinny);
-
-        // Grab the id of the new child node for later
-        client.getAttribute('//*[contains(@class, "WorkflowChart-isNodeBeingAdded")]/..', 'id', (res) => {
-        console.log(res.value)    
-        newChildNodeId = res.value.split('-')[1];
-        });
-
-        client
-            .waitForElementVisible(jobSearchBar)
-            .clearValue(jobSearchBar)
-            .setValue(jobSearchBar, [`name.iexact:"${data.template.name}"`, client.Keys.ENTER])
-            .pause(1000)
-            .findThenClick(`//div[contains(@class, "List-tableCell") and contains(text(), "${data.template.name}")]`)
-            .pause(1000)
-            .waitForElementNotVisible(spinny)
-            .findThenClick(edgeTypeDropdownBar)
-            .waitForElementPresent(successDropdown)
-            .waitForElementPresent(failureDropdown)
-            .waitForElementPresent(alwaysDropdown)
-            .findThenClick(alwaysDropdown)
-            .click(nodeSelectButton);
-    },
-    'Verify node-shifting behavior upon deletion': client => {
-        client
-            .moveToElement(xPathNodeById(newChildNodeId), 0, 0, () => {
-                client.pause(500);
-                client.waitForElementNotVisible(spinny);
-                client.click(xPathNodeById(newChildNodeId) + nodeAdd);
-            })
-            .pause(1000)
-            .waitForElementNotVisible(spinny);
-
-        // Grab the id of the new child node for later
-        client.getAttribute('//*[contains(@class, "WorkflowChart-isNodeBeingAdded")]/..', 'id', (res) => {
-            // I had to nest this logic in order to ensure that leafNodeId was available later on.
-            // Separating this out resulted in leafNodeId being `undefined` when sent to
-            // xPathLinkById
-            leafNodeId = res.value.split('-')[1];
-            client
-                .waitForElementVisible(jobSearchBar)
-                .clearValue(jobSearchBar)
-                .setValue(jobSearchBar, [`name.iexact:"${data.template.name}"`, client.Keys.ENTER])
-                .pause(1000)
-                .findThenClick(`//div[contains(@class, "List-tableCell") and contains(text(), "${data.template.name}")]`)
-                .pause(1000)
-                .waitForElementNotVisible(spinny)
-                .findThenClick(edgeTypeDropdownBar)
-                .waitForElementPresent(successDropdown)
-                .waitForElementPresent(failureDropdown)
-                .waitForElementPresent(alwaysDropdown)
-                .findThenClick(alwaysDropdown)
-                .click(nodeSelectButton)
-                .moveToElement(xPathNodeById(newChildNodeId), 0, 0, () => {
-                    client.pause(500);
-                    client.waitForElementNotVisible(spinny);
-                    client.click(xPathNodeById(newChildNodeId) + nodeRemove);
-                })
-                .pause(1000)
-                .waitForElementNotVisible(spinny)
-                .findThenClick(deleteConfirmation)
-                .waitForElementVisible(xPathLinkById(initialJobNodeId, leafNodeId));
-        });
-    },
-    after: client => {
-        client.end();
-    }
-};
