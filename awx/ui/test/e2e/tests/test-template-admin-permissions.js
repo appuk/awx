@@ -31,7 +31,7 @@ module.exports = {
 		getUser(namespace+'3'),
 		getTeam(namespace+'1'),
 		getTeam(namespace+'2')
-        ];
+        ]
         Promise.all(resources)
         .then(([job_template_admin, job_template, org, user1, user2, user3, team1, team2]) => {
         data = { job_template_admin, job_template, org, user1, user2, user3, team1, team2 };
@@ -122,12 +122,14 @@ module.exports = {
             .pause(1000)
             .waitForElementPresent(`#AddPermissions-teams a[href$="${data.team1.id}"]:enabled`)
             .click(`#teams_table [id='${data.team1.id}'] [type="checkbox"]:enabled`)
+            .pause(2000)
+            //.click('#users_tab')
+            //.pause(1000)
+            .waitForElementVisible('#add-permissions-modal span li > input')
+            .pause(2000)
+            .click('#add-permissions-modal span li > input')
             .pause(1000)
-            .click('#users_tab')
-            .pause(1000)
-            .waitForElementVisible('.AddPermissions-roleRemove:enabled')
-            .click('#add-permissions-modal .select2-search__field')
-            .setValue('#add-permissions-modal .select2-search__field', ["Read", client.Keys.ENTER])
+            .setValue('#add-permissions-modal span li > input', ["Read", client.Keys.ENTER])
             .waitForElementVisible('#add-permissions-modal .select2-selection__choice__remove')
             .pause(1000)
             .click('#add-permissions-modal .Form-saveButton')

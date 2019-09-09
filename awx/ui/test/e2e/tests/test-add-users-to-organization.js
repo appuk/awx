@@ -21,7 +21,7 @@ module.exports = {
 		getOrganization(namespace),
 		getUser(namespace+'1'),
 		getUser(namespace+'1'),
-        ];
+        ]
         Promise.all(resources)
         .then(([org, user1, user2]) => {
         data = { org, user1, user2 };

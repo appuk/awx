@@ -1,0 +1,4 @@
+'#schedulerName'
+'#schedule_save_btn'
+.wait(`#/templates/job_template/${data.job_template2.id}/schedules/`)
+'#edit-action'

@@ -1,28 +1,14 @@
 import uuid from 'uuid';
 
 import {
-    getJobTemplateAdmin,
-	getUser,
-	getTeam,
-    getOrganization,
-    getJobTemplate
-} from '../fixtures';
-
-import {
     AWX_E2E_URL
 } from '../settings';
 
-import {
-    post
-} from '../api';
-
 const testID = uuid().substr(0, 8);
 const namespace = `credential-types-${testID}`;
-let data;
 
 module.exports = {
     'login': client => {
-        // initializeData();   
         client.login();
         client.waitForAngular();
     },
@@ -54,6 +40,7 @@ module.exports = {
     },
     'test that incorrect input/injector configuration creates a warning': client => {
         client 
+            .pause(1000)
             .click('[aw-tool-tip="Create a new credential type"][id="button-add"]:enabled')
             .waitForElementVisible('#credential_type_name:enabled')
             .setValue('#credential_type_name:enabled', [`${namespace}-single-file`])
@@ -86,6 +73,45 @@ module.exports = {
             .waitForElementVisible(`//*[@id="credential_types_table"]//a[text()="${namespace}-single-file"]`)
             .useCss()
             .pause(1000)
+    },
+    'test update operation on credential type': client => {
+        client 
+        .waitForElementVisible('.credential_typesList .SmartSearch-input:enabled')
+        .pause(1000)
+        .clearValue('.credential_typesList .SmartSearch-input:enabled')
+        .pause(1000)
+        .setValue('.credential_typesList .SmartSearch-input:enabled', [`name.iexact:${namespace}-single-file`, client.Keys.ENTER])
+        .pause(1000)
+        .useXpath()
+        .waitForElementVisible(`//*[@id="credential_types_table"]//a[text()="${namespace}-single-file"]`)
+        .useCss()
+        .click('#edit-action:enabled')
+        .waitForElementVisible('#credential_type_name:enabled')
+        .clearValue('#credential_type_name:enabled')
+        .setValue('#credential_type_name:enabled', [`${namespace}-single-file-updated`])
+        .pause(1000)
+        .click('#credential_type_save_btn:enabled')
+        .pause(1000)
+        .waitForElementVisible('.credential_typesList .SmartSearch-input:enabled')
+        .click('.TagComponent-button__delete')
+        .pause(1000)
+        .clearValue('.credential_typesList .SmartSearch-input:enabled')
+        .pause(1000)
+        .setValue('.credential_typesList .SmartSearch-input:enabled', [`name.iexact:${namespace}-single-file-updated`, client.Keys.ENTER])
+        .pause(1000)
+        .useXpath()
+        .waitForElementVisible(`//*[@id="credential_types_table"]//a[text()="${namespace}-single-file-updated"]`)
+        .useCss()
+    },
+    'test delete operation on credential type': client => {
+        client 
+        .waitForElementVisible('#delete-action:enabled')
+        .click('#delete-action:enabled')
+        .pause(1000)
+        .waitForElementVisible('#prompt_action_btn:enabled')
+        .click('#prompt_action_btn:enabled')
+        .pause(1000)
+        .waitForElementVisible('.credential_typesList .List-searchNoResults')
     },
     'test that the credential type can be sourced during the “New Credential” flows': client => {
         client 
